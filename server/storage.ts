@@ -64,7 +64,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createMessage(insertMessage: InsertMessage): Promise<Message> {
-    const result = await db.insert(messages).values(insertMessage).returning();
+    // Ensure codeBlocks is always an array (never undefined)
+    const messageWithCodeBlocks = {
+      ...insertMessage,
+      codeBlocks: insertMessage.codeBlocks || [] 
+    };
+    const result = await db.insert(messages).values(messageWithCodeBlocks).returning();
     return result[0];
   }
 }
@@ -139,7 +144,8 @@ export class MemStorage implements IStorage {
     const message: Message = {
       ...insertMessage,
       id,
-      timestamp: new Date()
+      timestamp: new Date(),
+      codeBlocks: insertMessage.codeBlocks || []
     };
     this.messages.set(id, message);
     return message;
