@@ -3,6 +3,8 @@ import {
   conversations, type Conversation, type InsertConversation,
   messages, type Message, type InsertMessage
 } from "@shared/schema";
+import { db } from "./db";
+import { eq, desc, asc } from "drizzle-orm";
 
 export interface IStorage {
   // User operations
@@ -20,6 +22,54 @@ export interface IStorage {
   createMessage(message: InsertMessage): Promise<Message>;
 }
 
+export class DatabaseStorage implements IStorage {
+  // User methods
+  async getUser(id: number): Promise<User | undefined> {
+    const results = await db.select().from(users).where(eq(users.id, id));
+    return results.length > 0 ? results[0] : undefined;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const results = await db.select().from(users).where(eq(users.username, username));
+    return results.length > 0 ? results[0] : undefined;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const result = await db.insert(users).values(insertUser).returning();
+    return result[0];
+  }
+
+  // Conversation methods
+  async getConversations(): Promise<Conversation[]> {
+    return await db.select().from(conversations).orderBy(desc(conversations.createdAt));
+  }
+
+  async getConversation(id: number): Promise<Conversation | undefined> {
+    const results = await db.select().from(conversations).where(eq(conversations.id, id));
+    return results.length > 0 ? results[0] : undefined;
+  }
+
+  async createConversation(insertConversation: InsertConversation): Promise<Conversation> {
+    const result = await db.insert(conversations).values(insertConversation).returning();
+    return result[0];
+  }
+
+  // Message methods
+  async getMessages(conversationId: number): Promise<Message[]> {
+    return await db
+      .select()
+      .from(messages)
+      .where(eq(messages.conversationId, conversationId))
+      .orderBy(asc(messages.timestamp));
+  }
+
+  async createMessage(insertMessage: InsertMessage): Promise<Message> {
+    const result = await db.insert(messages).values(insertMessage).returning();
+    return result[0];
+  }
+}
+
+// Keep backward compatibility for in-memory storage during testing/development
 export class MemStorage implements IStorage {
   private users: Map<number, User>;
   private conversations: Map<number, Conversation>;
@@ -96,4 +146,5 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Use database storage now that we have a database
+export const storage = new DatabaseStorage();
