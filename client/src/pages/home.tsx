@@ -192,54 +192,104 @@ const HomePage: React.FC = () => {
     dispatch({ type: "SET_PREFERRED_LANGUAGE", payload: language });
   };
 
+  // Function to generate random binary string animations
+  const generateBinaryElements = () => {
+    const binaryElements = [];
+    const binaryStrings = [
+      "01001010", "10101110", "11100101", "00110011", 
+      "for (let i=0; i<n; i++)", "if (node.next !== null)", 
+      "while (!queue.isEmpty())", "return low + high >>> 1", 
+      "O(n log n)", "function quickSort()", "class BinaryTree {}", 
+      "const visited = new Set()", "arr[i] = arr[j]"
+    ];
+    
+    for (let i = 0; i < 20; i++) {
+      const left = Math.floor(Math.random() * 100);
+      const top = Math.floor(Math.random() * 100);
+      const delay = Math.random() * 8;
+      const duration = 6 + Math.random() * 10;
+      const textIndex = Math.floor(Math.random() * binaryStrings.length);
+      
+      binaryElements.push(
+        <div
+          key={i}
+          className="binary"
+          style={{
+            left: `${left}%`,
+            top: `${top}%`,
+            animationDelay: `${delay}s`,
+            animationDuration: `${duration}s`
+          }}
+        >
+          {binaryStrings[textIndex]}
+        </div>
+      );
+    }
+    
+    return binaryElements;
+  };
+
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-screen flex flex-col relative">
+      {/* Algorithmic background */}
+      <div className="algo-bg"></div>
+      <div className="algo-pattern"></div>
+      
+      {/* Floating binary code */}
+      {generateBinaryElements()}
+      
       {/* Header */}
       <ChatHeader onOpenSettings={() => setSettingsOpen(true)} />
       
       {/* Main content */}
-      <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
+      <div className="flex-1 flex flex-col md:flex-row overflow-hidden relative z-10">
         {/* Sidebar (desktop) */}
-        <Sidebar
-          conversations={state.conversations}
-          onSelectConversation={handleSelectConversation}
-          currentConversationId={state.currentConversationId}
-          onSelectTopic={handleSelectTopic}
-          selectedSubtopic={selectedSubtopic}
-          setSelectedSubtopic={setSelectedSubtopic}
-        />
+        <div className="glass-darker md:w-72 lg:w-80 flex-shrink-0 md:flex-shrink-0 md:ml-4 md:my-4 md:rounded-lg overflow-hidden">
+          <Sidebar
+            conversations={state.conversations}
+            onSelectConversation={handleSelectConversation}
+            currentConversationId={state.currentConversationId}
+            onSelectTopic={handleSelectTopic}
+            selectedSubtopic={selectedSubtopic}
+            setSelectedSubtopic={setSelectedSubtopic}
+          />
+        </div>
         
         {/* Main chat area */}
-        <ChatContainer
-          messages={state.messages}
-          isLoading={state.isLoading}
-          onSendMessage={handleSendMessage}
-          preferredLanguage={state.preferredLanguage}
-          onLanguageChange={handleLanguageChange}
-        />
+        <div className="glass flex-1 md:mx-4 md:my-4 md:rounded-lg overflow-hidden">
+          <ChatContainer
+            messages={state.messages}
+            isLoading={state.isLoading}
+            onSendMessage={handleSendMessage}
+            preferredLanguage={state.preferredLanguage}
+            onLanguageChange={handleLanguageChange}
+          />
+        </div>
       </div>
       
       {/* Mobile navigation */}
-      <MobileNav
-        activeTab={activeMobileTab}
-        onChangeTab={setActiveMobileTab}
-        onSelectTopic={(prompt) => {
-          handleSelectTopic(prompt);
-          setActiveMobileTab('chat');
-        }}
-        conversations={state.conversations}
-        onSelectConversation={(id) => {
-          handleSelectConversation(id);
-          setActiveMobileTab('chat');
-        }}
-        currentConversationId={state.currentConversationId}
-        selectedSubtopic={selectedSubtopic}
-        setSelectedSubtopic={setSelectedSubtopic}
-        onOpenSettings={() => {
-          setSettingsOpen(true);
-          setActiveMobileTab('chat');
-        }}
-      />
+      <div className="glass-darker md:hidden">
+        <MobileNav
+          activeTab={activeMobileTab}
+          onChangeTab={setActiveMobileTab}
+          onSelectTopic={(prompt) => {
+            handleSelectTopic(prompt);
+            setActiveMobileTab('chat');
+          }}
+          conversations={state.conversations}
+          onSelectConversation={(id) => {
+            handleSelectConversation(id);
+            setActiveMobileTab('chat');
+          }}
+          currentConversationId={state.currentConversationId}
+          selectedSubtopic={selectedSubtopic}
+          setSelectedSubtopic={setSelectedSubtopic}
+          onOpenSettings={() => {
+            setSettingsOpen(true);
+            setActiveMobileTab('chat');
+          }}
+        />
+      </div>
       
       {/* Settings dialog */}
       <SettingsDialog

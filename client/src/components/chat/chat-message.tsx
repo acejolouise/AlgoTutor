@@ -42,14 +42,14 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
     <div
       className={`message-appear p-4 md:p-6 rounded-xl shadow-sm mb-4 ${
         isUser
-          ? "bg-primary bg-opacity-5 border border-primary border-opacity-10 ml-auto md:ml-12 max-w-2xl"
-          : "bg-white border border-gray-200"
+          ? "glass border border-primary/20 ml-auto md:ml-12 max-w-2xl bg-gradient-to-r from-primary/10 to-primary/5"
+          : "glass-darker border border-white/10"
       }`}
     >
       <div className="flex">
         {!isUser && (
           <div className="flex-shrink-0 mr-4">
-            <Avatar className="h-10 w-10 bg-primary text-white">
+            <Avatar className="h-10 w-10 bg-primary/80 text-white border border-cyan-400/50 shadow-lg shadow-cyan-500/20">
               <Bot className="h-5 w-5" />
               <AvatarFallback>AI</AvatarFallback>
             </Avatar>
@@ -58,11 +58,13 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
 
         <div className={`flex-1 ${isUser ? "text-right" : ""}`}>
           <div className={`font-medium mb-2 flex items-center ${isUser ? "justify-end" : ""}`}>
-            <span>{isUser ? "You" : "AlgoTutor"}</span>
-            <span className="text-xs text-gray-400 mx-2">{formattedTime}</span>
+            <span className={`${isUser ? "text-foreground" : "text-white"}`}>
+              {isUser ? "You" : "AlgoTutor"}
+            </span>
+            <span className="text-xs text-muted-foreground/70 mx-2">{formattedTime}</span>
           </div>
 
-          <div className="text-gray-700 space-y-2">
+          <div className={`space-y-2 ${isUser ? "text-foreground" : "text-foreground/90"}`}>
             {/* Render text content */}
             <div className={`${isUser ? "text-right" : ""}`}>
               {renderContent(message.content)}
@@ -88,7 +90,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
 
         {isUser && (
           <div className="flex-shrink-0 ml-4">
-            <Avatar className="h-10 w-10 bg-gray-200 text-gray-700">
+            <Avatar className="h-10 w-10 bg-blue-500/50 text-white border border-blue-400/50 shadow-lg shadow-blue-500/20">
               <User className="h-5 w-5" />
               <AvatarFallback>YOU</AvatarFallback>
             </Avatar>

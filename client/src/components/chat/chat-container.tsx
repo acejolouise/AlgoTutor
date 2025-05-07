@@ -27,7 +27,7 @@ const ChatContainer: React.FC<ChatContainerProps> = ({
   }, [messages]);
 
   return (
-    <div className="flex-1 flex flex-col bg-gray-50 overflow-hidden">
+    <div className="flex-1 flex flex-col overflow-hidden">
       {/* Chat messages area */}
       <div className="p-4 md:py-6 flex-1 overflow-y-auto">
         <div className="max-w-3xl mx-auto space-y-6">
@@ -42,19 +42,19 @@ const ChatContainer: React.FC<ChatContainerProps> = ({
 
           {/* Loading indicator */}
           {isLoading && (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6 animate-pulse">
+            <div className="glass-darker rounded-xl p-4 md:p-6 animate-pulse">
               <div className="flex">
                 <div className="flex-shrink-0 mr-4">
-                  <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-white">
+                  <div className="h-10 w-10 rounded-full bg-primary/80 flex items-center justify-center text-white">
                     <Loader2 className="h-5 w-5 animate-spin" />
                   </div>
                 </div>
                 <div className="flex-1">
-                  <div className="font-medium mb-1">AlgoTutor</div>
+                  <div className="font-medium mb-1 text-white">AlgoTutor</div>
                   <div className="flex space-x-1">
-                    <div className="h-2 w-2 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: "0.1s" }}></div>
-                    <div className="h-2 w-2 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: "0.2s" }}></div>
-                    <div className="h-2 w-2 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: "0.3s" }}></div>
+                    <div className="h-2 w-2 rounded-full bg-cyan-400 animate-bounce" style={{ animationDelay: "0.1s" }}></div>
+                    <div className="h-2 w-2 rounded-full bg-cyan-400 animate-bounce" style={{ animationDelay: "0.2s" }}></div>
+                    <div className="h-2 w-2 rounded-full bg-cyan-400 animate-bounce" style={{ animationDelay: "0.3s" }}></div>
                   </div>
                 </div>
               </div>
@@ -67,12 +67,14 @@ const ChatContainer: React.FC<ChatContainerProps> = ({
       </div>
 
       {/* Chat input area */}
-      <ChatInput
-        onSendMessage={onSendMessage}
-        isLoading={isLoading}
-        preferredLanguage={preferredLanguage}
-        onLanguageChange={onLanguageChange}
-      />
+      <div className="glass-darker border-t border-white/10">
+        <ChatInput
+          onSendMessage={onSendMessage}
+          isLoading={isLoading}
+          preferredLanguage={preferredLanguage}
+          onLanguageChange={onLanguageChange}
+        />
+      </div>
     </div>
   );
 };
