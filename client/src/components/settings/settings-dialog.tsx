@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -22,14 +22,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { EyeIcon, EyeOffIcon, Sun, Moon, Monitor } from "lucide-react";
+import { EyeIcon, EyeOffIcon, Sun, Moon, Monitor, Contrast } from "lucide-react";
 import { programmingLanguages } from "../../lib/openai";
+import { useTheme } from "next-themes";
 
 // Form schema for settings
 const settingsSchema = z.object({
   apiKey: z.string().optional(),
   language: z.string(),
-  theme: z.enum(["light", "dark", "system"]),
+  theme: z.enum(["light", "dark", "system", "monochrome"]),
   fontSize: z.number().min(1).max(5),
 });
 
@@ -49,6 +50,7 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({
   onLanguageChange,
 }) => {
   const [showApiKey, setShowApiKey] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   // Initialize form with default values
   const form = useForm<SettingsFormValues>({
@@ -56,15 +58,29 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({
     defaultValues: {
       apiKey: "••••••••••••••••••••",
       language: preferredLanguage,
-      theme: "light" as const,
+      theme: (theme || "monochrome") as any,
       fontSize: 3,
     },
   });
 
+  // Update form when theme changes
+  useEffect(() => {
+    if (theme) {
+      form.setValue("theme", theme as any);
+    }
+  }, [theme, form]);
+
   // Handle form submission
   const onSubmit = (data: SettingsFormValues) => {
     console.log("Settings updated:", data);
+    
+    // Update theme
+    setTheme(data.theme);
+    
+    // Update language
     onLanguageChange(data.language);
+    
+    // Close dialog
     onOpenChange(false);
   };
 
@@ -147,7 +163,7 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Appearance</FormLabel>
-                  <div className="flex space-x-2">
+                  <div className="grid grid-cols-2 gap-2">
                     <Button
                       type="button"
                       variant={field.value === "light" ? "default" : "outline"}
@@ -165,6 +181,15 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({
                     >
                       <Moon className="h-4 w-4 mr-2" />
                       Dark
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={field.value === "monochrome" ? "default" : "outline"}
+                      className="flex-1"
+                      onClick={() => field.onChange("monochrome")}
+                    >
+                      <Contrast className="h-4 w-4 mr-2" />
+                      Monochrome
                     </Button>
                     <Button
                       type="button"
